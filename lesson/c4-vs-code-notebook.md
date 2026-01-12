@@ -18,7 +18,7 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80                   # VS Code & Jupyter 통합 포트
+      targetPort: 8080                   # VS Code & Jupyter 통합 포트
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +39,7 @@ spec:
         # VS Code가 포함된 최신 NVIDIA TensorFlow 이미지 사용
         image: codercom/code-server:latest 
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         env:
         - name: PASSWORD
           value: "code!@#"         # 접속 비밀번호
