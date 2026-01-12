@@ -115,7 +115,7 @@ resource "aws_iam_role_policy_attachment" "eks_creator_policy_cluster" {
 
 # EC2 인스턴스에 IAM Role을 연결하기 위한 Instance Profile
 resource "aws_iam_instance_profile" "eks_creator_profile" {
-  name = "GetStartedEKS_Profile"
+  name = "AerialOnEKS_Profile"
   role = aws_iam_role.eks_creator_role.name
 }
 
@@ -227,7 +227,7 @@ sudo systemctl restart code-server@ec2-user
 _DATA
 
   tags = {
-    Name = "code-server-graviton"
+    Name = "aoe-code-server-graviton"
   }
 }
 
@@ -261,70 +261,9 @@ sudo systemctl restart code-server@ec2-user
 _DATA
 
   tags = {
-    Name = "code-server-x86"
+    Name = "aoe-code-server-x86"
   }
 }
-
-
-/*
-resource "aws_instance" "gitlab_box" {
-  ami                         = data.aws_ami.al2023_x86_64.id
-  instance_type               = var.gitlab_type
-  subnet_id                   = aws_subnet.public[0].id
-  vpc_security_group_ids      = [aws_security_group.instance_sg.id]
-  associate_public_ip_address = true
-  key_name                    = var.key_name
-
-  # IAM Instance Profile 연결 <--- EC2에 권한을 부여합니다.
-  iam_instance_profile = aws_iam_instance_profile.eks_creator_profile.name
-
-  // 루트 볼륨 크기를 30GB로 설정
-  root_block_device {
-    volume_size = 100 # GiB 단위
-    volume_type = "gp3" # 최신 gp3 볼륨 타입 사용
-  }
-
-  user_data = <<_DATA
-#!/bin/bash
-# 1. DNF 자동 업데이트 프로세스 완료 대기 (보다 확실한 방법)
-while fuser /var/lib/dnf/last_makecache >/dev/null 2>&1 ; do echo "Waiting for other dnf processes..."; sleep 5; done
-
-# 2. 필수 의존성 사전 설치 및 캐시 초기화
-sudo dnf clean all
-sudo dnf install -y curl policycoreutils perl
-
-# 3. GitLab 리포지토리 추가 (GPG 키를 미리 신뢰하도록 설정)
-curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
-
-# 4. GPG 키 수동 임포트 (중요: 설치 중 중단 방지)
-sudo dnf makecache -y
-
-# 5. EC2 Metadata를 이용한 EXTERNAL_URL 설정
-TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s 169.254.169.254)
-# DNS가 없는 경우 IP로 설정, 있는 경우 public-hostname 유지
-export EXTERNAL_URL="http://$PUBLIC_IP"
-
-# 6. GitLab 설치 (설치 실패 시 재시도 로직 추가)
-MAX_RETRIES=3
-for i in $(seq 1 $MAX_RETRIES); do
-  sudo EXTERNAL_URL="$EXTERNAL_URL" dnf install -y gitlab-ce && break
-  if [ $i -eq $MAX_RETRIES ]; then echo "GitLab installation failed after $MAX_RETRIES attempts"; exit 1; fi
-  sudo dnf clean all
-  sleep 10
-done
-
-# 7. 설정 및 실행
-sudo gitlab-ctl reconfigure
-_DATA
-
-  tags = {
-    Name = "gitlab-server"
-  }
-}
-
-*/
-
 
 
 
