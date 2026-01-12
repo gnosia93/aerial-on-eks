@@ -13,7 +13,7 @@ variable "key_name" {
 
 variable "cluster_name" {
   type        = string
-  default     = "get-started-eks"
+  default     = "aerial-on-eks"
 }
 
 variable "vpc_cidr_block" {
@@ -33,14 +33,6 @@ variable "x86_type" {
   type        = string
   default     = "c6i.4xlarge"
 }
-
-/*
-variable "gitlab_type" {
-  description = "EC2 Instance Type (x86)"
-  type        = string
-  default     = "c7i.8xlarge"
-}
-*/
 
 # 공인 IP 확인
 data "http" "my_ip" {
