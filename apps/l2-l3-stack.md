@@ -59,3 +59,9 @@ except KeyboardInterrupt:
     print("Stack stopped.")
 
 ```
+EKS 배치를 위한 핵심 포인트
+* 멀티 프로세싱/스레딩: Graviton은 물리적 코어 당 하나의 스레드를 가지므로, ThreadPoolExecutor나 multiprocessing을 사용하여 시뮬레이션 트래픽을 병렬로 처리할 때 성능이 극대화됩니다.
+* 데이터 직렬화: TX(x86)에서 L2/L3(ARM)로 데이터를 보낼 때, 엔디안(Endian) 문제가 발생하지 않도록 Protobuf나 Pickle 등을 사용해 직렬화하는 것이 안전합니다.
+* 리소스 할당: EKS에서 이 Pod를 띄울 때 반드시 nodeSelector를 통해 arm64 노드로 보내야 합니다.
+
+
