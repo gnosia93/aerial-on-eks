@@ -1,4 +1,4 @@
-# PyAerial-on-eks
+# aerial-on-eks
 
 
 테스트용 신호 발생기(Signal Generator)와 처리기(PyAerial)를 모두 쿠버네티스(k8s) 환경에서 구현한다면, "가상화된 무선 통신 테스트베드" 아키텍처가 됩니다. 실제 하드웨어 없이도 5G/6G 환경을 시뮬레이션할 수 있는 구조입니다.
