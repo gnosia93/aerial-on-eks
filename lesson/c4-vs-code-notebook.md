@@ -45,7 +45,7 @@ spec:
           value: "code!@#"         # 접속 비밀번호
         resources:
           limits:
-            nvidia.com: 1          # GPU 가속 활성화 (필요시)
+            nvidia.com/gpu: 1          # GPU 가속 활성화 (필요시)
             memory: "8Gi"
             cpu: "4"
         volumeMounts:
