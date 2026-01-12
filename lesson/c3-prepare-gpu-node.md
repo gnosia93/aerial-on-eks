@@ -163,7 +163,8 @@ Wed Dec 10 06:44:46 2025
 |  No running processes found                                                             |
 +-----------------------------------------------------------------------------------------+
 ```
-
+aws-node-viewer 로 spot 타입의 gpu 노드가 프로비저닝된 것을 확인한다. 
+![](https://github.com/gnosia93/aerial-on-eks/blob/main/images/aws-node-viewer.png)
 
 ## 레퍼런스 ##
 
