@@ -9,4 +9,6 @@
 
 * [C2. EKS 클러스터 생성하기](https://github.com/gnosia93/aerial-on-eks/blob/main/lesson/c2-provision-eks.md)
 
+* [C3. GPU 노드준비 하기]()
+
 * [C3. VS-Code 실행하기](https://github.com/gnosia93/aerial-on-eks/blob/main/lesson/c3-vs-code.md)
