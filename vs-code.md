@@ -51,6 +51,14 @@ spec:
       volumes:
       - name: workspace-storage
         emptyDir: {}
-
 ```
+주요 설정 및 사용 안내
+* 이미지 선택: 위 예시는 code-server 기본 이미지입니다. Sionna를 바로 쓰려면 NVIDIA NGC TensorFlow 이미지를 베이스로 code-server를 설치한 Custom Dockerfile을 사용하는 것이 가장 안정적입니다.
+* GPU 할당: nvidia.com: 1 설정을 통해 EKS 노드의 GPU를 컨테이너가 점유합니다. (EKS에 NVIDIA Device Plugin이 설치되어 있어야 합니다.)
+접속 방법:
+* kubectl apply -f sionna-dev.yaml 실행 후
+* kubectl get svc 명령어로 생성된 EXTERNAL-IP에 접속합니다.
+* VS Code 터미널에서 pip install sionna를 실행하여 환경을 완성합니다
+
+
     
