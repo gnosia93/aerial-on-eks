@@ -1,6 +1,25 @@
 EKS 클러스터에서 NVIDIA TensorFlow 컨테이너를 기반으로 VS Code(code-server)와 Jupyter Notebook을 동시에 사용할 수 있는 통합 환경 YAML 파일입니다.
 이 설정은 Sionna 실행을 위한 GPU 할당 및 외부 접속을 위한 LoadBalancer 설정을 포함합니다.
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nlb-service
+  annotations:
+    # 1. NLB를 생성하도록 지정
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    # 2. 파드 IP로 직접 전달 (성능 최적화 및 홉 감소)
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    # 3. 외부 인터넷에서 접근 가능하도록 설정
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+```
+
+
+
+
 📄 EKS 통합 개발 환경 설정 (sionna-dev.yaml)
+
 
 ```
 cat << EOF | kubectl apply -f - 
