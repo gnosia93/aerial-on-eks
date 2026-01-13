@@ -38,6 +38,7 @@ signal_pb2_grpc.py: 서비스 서버/클라이언트 로직(SignalStreamer)이 �
 ### 2. SignalGenerator ###
 gRPC-Python 스트리밍 라이브러리를 활용하여 SignalGenerator와 연결한다.
 ```
+import os
 import grpc
 import signal_pb2
 import signal_pb2_grpc
@@ -48,7 +49,7 @@ from sionna.channel import AWGN
 
 # reciever_channel = "pyaerial-service.default.svc.cluster.local:50051"
 # 동일 네임스페이스인 경우 아래와 같이 생략가능.
-reciever_channel = "pyaerial-service:50051"
+reciever_channel = os.env["RECEIVER_ADDRESS"]
 
 class SignalGenerator(tf.keras.Model):
     def __init__(self, num_bits_per_symbol=4):
@@ -114,20 +115,23 @@ CMD ["python", "signal_gen.py"]
 
 ## 도커 빌드 / ecr 푸시 ##
 ```
-AWS_REGION="ap-northeast-2"
-ACCOUNT_ID="123456789012"
+
+export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 REPO_NAME="sionna-generator"
-IMAGE_TAG="latest"
 ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 ```
-
+ecr 레포지토리를 생성하고 로그인 한다.
 ```
-aws ecr create-repository --repository-name sionna-generator --region ap-northeast-2
-docker build -t ${REPO_NAME} .
-docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}/${REPO_NAME}:${IMAGE_TAG}
-
+aws ecr create-repository --repository-name ${REPO_NAME} --region ${AWS_REGION}
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-docker push ${ECR_URL}/${REPO_NAME}:${IMAGE_TAG}
+```
+도커 이미지를 빌드하고 ecr 에 푸시한다.
+```
+docker build -t ${REPO_NAME} .
+docker tag ${REPO_NAME}:latest ${ECR_URL}/${REPO_NAME}:latest
+
+docker push ${ECR_URL}/${REPO_NAME}:latest 
 ```
 
 ## POD 배포하기 ##
