@@ -57,16 +57,48 @@ LATENCY_GAUGE = Gauge('sionna_processing_latency_ms', 'End-to-end latency in ms'
 # 메트릭 서버 시작 (8000 포트)
 start_http_server(8000)
 
-def monitor_performance(original_bits, recovered_bits, start_time):
-    # BER 계산 로직
-    error_count = np.sum(np.abs(original_bits - recovered_bits))
-    total_bits = recovered_bits.size
-    ber = error_count / total_bits
-    
-    # Prometheus에 값 업데이트
-    BER_GAUGE.set(ber)
-    THROUGHPUT_COUNTER.inc(total_bits)
-    LATENCY_GAUGE.set((time.time() - start_time) * 1000)
+class PyAerialReceiver(signal_pb2_grpc.SignalStreamerServicer):
+    def __init__(self):
+        self.context = pa.Context()
+        # ... (기타 초기화) ...
+
+    def StreamIQ(self, request_iterator, context):
+        for data in request_iterator:
+            # [시점 1] 처리 시작 시간 기록
+            start_time = time.time()
+            
+            # IQ 샘플 변환 및 cuPHY 처리
+            iq_samples = np.frombuffer(data.samples, dtype=np.complex64)
+            iq_tensor = tf.convert_to_tensor(iq_samples.reshape(data.batch_size, -1))
+            
+            # [핵심] cuPHY 파이프라인 가속 실행
+            # recovered_bits는 복호화된 결과물 (0, 1 비트)
+            recovered_bits = self.run_pyaerial_pipeline(iq_tensor)
+            
+            # [시점 2] 모니터링 함수 "자동" 호출
+            # data.original_bits는 송신측에서 비교를 위해 보낸 원본 데이터라고 가정
+            original_bits = np.frombuffer(data.original_bits, dtype=np.uint8) 
+            
+            self.monitor_performance(original_bits, recovered_bits, start_time)
+            
+            print(f"Metrics updated for bits: {len(recovered_bits)}")
+
+        return signal_pb2.Empty()
+
+    def monitor_performance(self, original_bits, recovered_bits, start_time):
+        """이 함수는 StreamIQ 루프 안에서 매번 실행됩니다."""
+        # 비트 개수가 다를 수 있으므로 최소 길이에 맞춤
+        min_len = min(len(original_bits), len(recovered_bits))
+        
+        # BER 계산 (비트가 다르면 1, 같으면 0 -> 평균내면 오차율)
+        error_count = np.sum(original_bits[:min_len] != recovered_bits[:min_len])
+        ber = error_count / min_len if min_len > 0 else 0
+        
+        # Prometheus 메트릭 업데이트
+        BER_GAUGE.set(ber)
+        THROUGHPUT_COUNTER.inc(min_len)
+        LATENCY_GAUGE.set((time.time() - start_time) * 1000) # ms 단위 변환
+
 ```
 
 ### Prometheus ServiceMonitor 설정 ###
