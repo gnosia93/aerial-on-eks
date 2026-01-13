@@ -56,6 +56,100 @@ if __name__ == "__main__":
     serve()
 ```
 
+### Dockerfile ###
+```
+FROM nvcr.io/nvidia/cuda:12.2.0-base-ubuntu22.04
 
+# 필수 패키지 및 파이썬 설치
+RUN apt-get update && apt-get install -y python3-pip python3-dev && \
+    rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
+
+# 의존성 파일 복사 및 설치
+# nvidia-aerial-pyaerial 등은 NVIDIA 전용 리포지토리 설정이 필요할 수 있음
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 50051
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
+CMD ["python3", "main.py"]
+```
+
+### ecr 푸시 ###
+```
+#!/bin/bash
+
+# 변수 설정
+REGION="ap-northeast-2"
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+REPO_NAME="cuphy-service"
+TAG="latest"
+ECR_URL="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
+
+# 1. ECR 로그인
+aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
+
+# 2. 리포지토리가 없으면 생성
+aws ecr describe-repositories --repository-names ${REPO_NAME} || \
+aws ecr create-repository --repository-name ${REPO_NAME}
+
+# 3. 이미지 빌드 (NVIDIA 런타임 고려)
+docker build -t ${REPO_NAME} .
+
+# 4. 태그 생성 및 푸시
+docker tag ${REPO_NAME}:${TAG} ${ECR_URL}/${REPO_NAME}:${TAG}
+docker push ${ECR_URL}/${REPO_NAME}:${TAG}
+
+echo "푸시 완료: ${ECR_URL}/${REPO_NAME}:${TAG}"
+```
+
+### Pod 샐행하기 ###
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cuphy-receiver
+  labels:
+    app: cuphy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cuphy
+  template:
+    metadata:
+      labels:
+        app: cuphy
+    spec:
+      # L1 처리를 위한 저지연 통신이 필요한 경우 hostNetwork 사용 고려
+      hostNetwork: true 
+      containers:
+      - name: aerial-container
+        image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            nvidia.com/gpu: 1             # GPU 1개 할당
+        env:
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,utility,video"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cuphy-grpc-svc
+spec:
+  clusterIP: None             # 헤드리스 설정
+  selector:
+    app: cuphy
+  ports:
+  - port: 50051
+    targetPort: 50051
+```
 
