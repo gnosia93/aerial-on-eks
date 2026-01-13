@@ -286,23 +286,21 @@ aws ec2 describe-instances \
         Name: Tags[?Key==`Name`].Value | [0],
         NodeGroup: Tags[?Key==`eks:nodegroup-name`].Value | [0],
         SubnetId: SubnetId,
-        PublicIp: PublicIpAddress,
-        State: State.Name
+        PublicIp: PublicIpAddress
     }' \
     --output table
 ```
 [결과]
 ```
----------------------------------------------------------------------------------------------------------------------------
-|                                                    DescribeInstances                                                    |
-+---------------------+----------------------------+------------+----------------+-----------+----------------------------+
-|     InstanceId      |           Name             | NodeGroup  |   PublicIp     |   State   |         SubnetId           |
-+---------------------+----------------------------+------------+----------------+-----------+----------------------------+
-|  i-0945e6078972c4d40|  aerial-on-eks-ng-arm-Node |  ng-arm    |  None          |  running  |  subnet-00cea810b9f478c01  |
-|  i-099be2ddc2e4c8e76|  aerial-on-eks-ng-arm-Node |  ng-arm    |  None          |  running  |  subnet-0d27a97c49a938a89  |
-|  i-0f44c5de195b8b47e|  aoe-code-server-x86       |  None      |  13.125.222.74 |  running  |  subnet-0add3f6700a0e02de  |
-+---------------------+----------------------------+------------+----------------+-----------+----------------------------+
-x86_64 $ 
+----------------------------------------------------------------------------------------------------------------
+|                                               DescribeInstances                                              |
++---------------------+-----------------------------+------------+----------------+----------------------------+
+|     InstanceId      |            Name             | NodeGroup  |   PublicIp     |         SubnetId           |
++---------------------+-----------------------------+------------+----------------+----------------------------+
+|  i-0945e6078972c4d40|  aerial-on-eks-ng-arm-Node  |  ng-arm    |  None          |  subnet-00cea810b9f478c01  |
+|  i-099be2ddc2e4c8e76|  aerial-on-eks-ng-arm-Node  |  ng-arm    |  None          |  subnet-0d27a97c49a938a89  |
+|  i-0f44c5de195b8b47e|  aoe-code-server-x86        |  None      |  13.125.222.74 |  subnet-0add3f6700a0e02de  |
++---------------------+-----------------------------+------------+----------------+----------------------------+
 ```
 
 ## 클러스터 삭제 ##
