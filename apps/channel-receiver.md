@@ -80,32 +80,21 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 CMD ["python3", "main.py"]
 ```
 
-### ecr 푸시 ###
+### 도커라이징 / ecr 푸시 ###
+
 ```
-#!/bin/bash
-
-# 변수 설정
-REGION="ap-northeast-2"
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+export AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 REPO_NAME="cuphy-service"
-TAG="latest"
-ECR_URL="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
+ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-# 1. ECR 로그인
-aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
+aws ecr create-repository --repository-name ${REPO_NAME} --region ${AWS_REGION}
+aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URL}
 
-# 2. 리포지토리가 없으면 생성
-aws ecr describe-repositories --repository-names ${REPO_NAME} || \
-aws ecr create-repository --repository-name ${REPO_NAME}
-
-# 3. 이미지 빌드 (NVIDIA 런타임 고려)
 docker build -t ${REPO_NAME} .
+docker tag ${REPO_NAME}:latest ${ECR_URL}/${REPO_NAME}:latest
 
-# 4. 태그 생성 및 푸시
-docker tag ${REPO_NAME}:${TAG} ${ECR_URL}/${REPO_NAME}:${TAG}
-docker push ${ECR_URL}/${REPO_NAME}:${TAG}
-
-echo "푸시 완료: ${ECR_URL}/${REPO_NAME}:${TAG}"
+docker push ${ECR_URL}/${REPO_NAME}:latest 
 ```
 
 ### Pod 샐행하기 ###
