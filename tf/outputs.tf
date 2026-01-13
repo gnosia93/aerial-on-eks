@@ -1,3 +1,4 @@
+/*
 output "com_graviton_dns" {
   value       = aws_instance.graviton_box.public_dns
   description = "SSH 및 VS Code Server 접속을 위한 EC2 인스턴스의 공인 IP 주소"
@@ -6,14 +7,7 @@ output "com_graviton_vscode" {
     value = "http://${aws_instance.graviton_box.public_dns}:9090"
     description = "브라우저에서 VS Code 서버에 접속할 수 있는 URL (PW: 'password' by default)"
 }
-
-/*
-output "gitlab-server" {
-  value       = aws_instance.gitlab_box.public_dns
-  description = "SSH 및 VS Code Server 접속을 위한 EC2 인스턴스의 공인 IP 주소"
-}
 */
-
 
 output "com_x86_dns" {
   value       = aws_instance.x86_box.public_dns
