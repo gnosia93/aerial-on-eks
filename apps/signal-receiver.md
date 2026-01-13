@@ -1,4 +1,4 @@
-## 시그널 리시버 (RX) ##
+## 채널 리시버 (RX) ##
 
 NVIDIA PyAerial은 내부적으로 NVIDIA cuPHY 가속 라이브러리를 호출하므로, 일반적인 Python 연산보다 수십 배 빠른 GPU 가속 신호 처리를 수행한다.
 이 샘플은 gRPC로 들어온 IQ 데이터를 받아 채널 추정 및 등화(Equalization)를 수행한다.
