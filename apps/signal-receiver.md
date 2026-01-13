@@ -3,6 +3,12 @@
 NVIDIA PyAerial은 내부적으로 NVIDIA cuPHY 가속 라이브러리를 호출하므로, 일반적인 Python 연산보다 수십 배 빠른 GPU 가속 신호 처리를 수행한다.
 이 샘플은 gRPC로 들어온 IQ 데이터를 받아 채널 추정 및 등화(Equalization)를 수행한다.
 
+#### cuPHY 의 이해 ####
+cuPHY는 NVIDIA의 Aerial SDK에 포함된 핵심 라이브러리로, 5G NR(New Radio) 물리 계층(L1, PHY)의 신호 처리 기능을 GPU에서 가속화하기 위해 설계되었다. 
+* 인라인 가속(Inline Acceleration): 별도의 하드웨어 가속기 없이 고성능 GPU 메모리 내에서 물리 계층 데이터 전체를 처리하여 지연 시간을 최소화하고 효율성을 극대화
+* O-RAN 준수: O-RAN 7.2x 프런트홀 분할(split) 옵션을 지원하며, 3GPP Release 15 사양을 준수
+* 통합 파이프라인: 채널 추정, 등화(Equalization), 빔포밍, LDPC 디코딩 등 계산 집약적인 작업을 병렬로 처리
+
 #### 1. PyAerial 수신부 알고리즘 (pyaerial_rx.py) ####
 ```
 import grpc
