@@ -98,6 +98,22 @@ except KeyboardInterrupt:
 * PyAerial Pod 측(Server)에서는 수신한 bytes 데이터를 np.frombuffer(request.iq_data, dtype=np.complex64).reshape(request.shape)로 복원하여 cuPHY 파이프라인에 주입할 수 있습니다. 
 * 수신 측에서 NVIDIA Aerial SDK의 어떤 모듈(예: PUSCH/PDSCH 디코더)로 데이터를 넘길 계획이신가요?
 
+
+## requirements.txt ##
+```
+# Keras 3 충돌 방지를 위한 TF 2.15 고정
+tensorflow==2.15.0
+# TF 2.15와 호환되는 레거시 Keras 패키지
+tf-keras==2.15.0
+
+# 시온나 및 관련 라이브러리
+sionna>=0.14.0
+grpcio>=1.50.0
+grpcio-tools>=1.50.0
+protobuf>=4.21.0
+numpy<2.0.0
+```
+
 ## Dockerfile ##
 Sionna는 GPU 가속을 위해 NVIDIA TensorFlow 컨테이너 위에서 돌리는 것이 가장 좋다.
 Sionna는 TensorFlow를 기반으로 작동하기 때문에 별도의 GPU가 없으면 자동으로 CPU를 사용하여 연산을 수행한다.
@@ -107,11 +123,14 @@ CPU 환경이라면 batch_size를 적절히 조절하여 지연 시간(Latency)�
 FROM nvcr.io/nvidia/tensorflow:23.10-tf2-py3
 
 WORKDIR /app
-RUN pip install sionna
-COPY signal_gen.py /app/signal_gen.py
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
+COPY signal_gen.py /app/signal_gen.py
 CMD ["python", "signal_gen.py"]
 ```
+
+
 
 ## 도커 빌드 / ecr 푸시 ##
 ```
