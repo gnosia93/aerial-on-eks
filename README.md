@@ -1,6 +1,6 @@
 # aerial-on-eks
 
-![](https://github.com/gnosia93/get-started-eks/blob/main/images/workshop-arch-2.png)
+![](https://github.com/gnosia93/aerial-on-eks/blob/main/images/workshop-arch-aerial.png)
 
 ### _O-RAN(Open RAN) 아키텍처_ ###
 
