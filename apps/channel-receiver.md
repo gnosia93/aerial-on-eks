@@ -130,7 +130,7 @@ spec:
       hostNetwork: true 
       containers:
       - name: aerial-container
-        image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}
+        image: ${ECR_URL}/${REPO_NAME}:latest
         ports:
         - containerPort: 50051
         resources:
