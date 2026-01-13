@@ -7,7 +7,7 @@
 * Sionna GPU Pod -> gRPC -> PyAreal GPU Pod
 * Sinnoa GPU Pod -> gRPC -> Graviton L2/L3 stack -> gRPC -> PyAreal GPU Pod 
 * PyAreal GPU Pod -> Prometheus/Grafna dashboard (BER 측정/시각화)
-* 고성능 L1 성능이 필요한 경우 gRPC 대신 Shared Memory 사용
+* 고성능 L1 필요한 경우 gRPC 대신 Shared Memory 사용
 
 ### _Topics_ ###
 
