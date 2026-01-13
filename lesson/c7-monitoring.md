@@ -6,44 +6,7 @@ BER(Bit Error Rate)을 측정하려면, 수신하여 디코딩한 비트 스트�
 * 실제 시스템: 실제 통신에서는 미리 약속된 특정 패턴(테스트 PRBS 패턴)이나, 상위 계층에서 확인된 정상적인 데이터 블록을 참조 데이터로 사용
 * 시뮬레이션/테스트 환경: TX에서 보낸 데이터를 RX가 접근할 수 있는 공유 메모리나 네트워크 경로로 미리 전달
 
-```
-import tensorflow as tf
-import numpy as np
-from sionna.utils import BinarySource
-
-class PerformanceMonitor:
-    def __init__(self):
-        print("[Monitor] Performance Tracker Initialized")
-
-    def calculate_ber(self, original_bits, recovered_bits):
-        """
-        비트 에러율(Bit Error Rate) 계산
-        """
-        # 0과 1의 차이를 계산하여 에러 개수 파악
-        error_count = tf.reduce_sum(tf.abs(original_bits - recovered_bits))
-        total_bits = tf.cast(tf.size(original_bits), tf.float32)
-        ber = error_count / total_bits
-        return ber.numpy()
-
-# RX 루프 내 적용 예시
-monitor = PerformanceMonitor()
-source = BinarySource()
-
-while True:
-    data, addr = sock.recvfrom(65535)
-    
-    # 1. 수신 및 복조 (이전 단계 코드 참조)
-    recovered_bits = rx.decode_signal(data)
-    
-    # 2. 성능 평가 (실제 환경선 TX가 보낸 시퀀스 넘버 기반으로 대조)
-    # 여기서는 데모를 위해 동일 크기의 랜덤 소스와 비교 예시
-    mock_original = source([64, 1024]) 
-    current_ber = monitor.calculate_ber(mock_original, recovered_bits)
-    
-    print(f"📊 [Real-time Stats] BER: {current_ber:.6f} | Status: {'Stable' if current_ber < 0.01 else 'High Error'}")
-```
-
-### RX Pod에 Prometheus 메트릭 노출 코드 추가 ###
+### 메트릭 서버 코드 추가 ###
 수신단(RX)에서 계산된 BER(비트 에러율)과 처리량(Throughput)을 Prometheus가 긁어갈 수 있도록 엔드포인트를 열어 준다.
 ```
 from prometheus_client import start_http_server, Gauge, Counter
@@ -85,6 +48,7 @@ class PyAerialReceiver(signal_pb2_grpc.SignalStreamerServicer):
 
         return signal_pb2.Empty()
 
+    # 프로메테우스 메트릭 서버코드  
     def monitor_performance(self, original_bits, recovered_bits, start_time):
         """이 함수는 StreamIQ 루프 안에서 매번 실행됩니다."""
         # 비트 개수가 다를 수 있으므로 최소 길이에 맞춤
