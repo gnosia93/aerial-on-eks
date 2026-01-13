@@ -1,4 +1,4 @@
-## TX ##
+## 시그널 제너레이터 (TX) ##
 NVIDIA PyAerial 및 Triton gRPC 인프라 환경에서 Sionna 생성 신호를 실시간 전송하기 위한 gRPC 구현 코드이다. TensorFlow complex64 텐서를 tobytes()로 직렬화하여 protobuf bytes 필드에 담아 보내는 방식이 가장 효율적이다.
 
 ### 1. Proto 정의 (signal.proto) ###
