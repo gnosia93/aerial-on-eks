@@ -79,6 +79,12 @@ sudo dnf install -y python-unversioned-command
 sudo dnf install -y python3-pip
 ```
 
+#### 7. anaconda 설치 ####
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2023.03-1-Linux-x86_64.sh
+sh Anaconda3-2023.03-1-Linux-x86_64.sh  
+```
+
 ## EKS 클러스터 생성하기 ##
 
 ### 1. 환경 설정 ###
