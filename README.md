@@ -17,7 +17,7 @@
 
 * [C6. 그라비톤 기반 L2/L3 스택 구현](https://github.com/gnosia93/aerial-on-eks/blob/main/apps/graviton-L2L3-stack.md)
 
-* [C7. 모니터링]()
+* [C7. 모니터링](https://github.com/gnosia93/aerial-on-eks/blob/main/lesson/c7-monitoring.md)
 
 ### _Appendix_ ###
 
