@@ -5,7 +5,7 @@
 ### _O-RAN(Open Radio Access Network) 아키텍처_ ###
 
 * Sionna GPU Pod -> gRPC -> PyAreal GPU Pod
-* Sinnoa GPU Pod -> gRPC -> PyAreal GPU Pod -> Graviton L2/L3 stack 
+* Sinnoa GPU Pod -> gRPC -> PyAreal GPU Pod -> Graviton L2/L3 stack Pod
 * PyAreal GPU Pod -> Prometheus/Grafna dashboard (BER 측정/시각화)
 * 지원 토폴로지 
   * Shared Memory (Zero-Copy Interface / Sionna 와 PyAreal 가 동일 Pod를 사용하는 경우만 지원)
