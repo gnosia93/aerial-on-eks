@@ -3,8 +3,6 @@
 테라폼을 실행한 로컬 PC 에서 아래와 같이 output 정보를 확인한다.  
 ```
 % terraform output
-com_graviton_dns = "ec2-3-34-182-75.ap-northeast-2.compute.amazonaws.com"
-com_graviton_vscode = "http://ec2-3-34-182-75.ap-northeast-2.compute.amazonaws.com:9090"
 com_x86_dns = "ec2-43-202-5-201.ap-northeast-2.compute.amazonaws.com"
 com_x86_vscode = "http://ec2-43-202-5-201.ap-northeast-2.compute.amazonaws.com:9090"
 ```
@@ -173,17 +171,6 @@ managedNodeGroups:                           # 관리형 노드 그룹
     desiredCapacity: 2
     amiFamily: AmazonLinux2023
     privateNetworking: true                  # 이 노드 그룹이 PRIVATE 서브넷만 사용하도록 지정합니다.
-    iam:
-      withAddonPolicies:
-        ebs: true                     		 # EBS CSI 드라이버가 작동하기 위한 IAM 권한 부여
-
-  - name: ng-x86
-    instanceType: c6i.2xlarge
-    minSize: 2
-    maxSize: 2
-    desiredCapacity: 2
-    amiFamily: AmazonLinux2023
-    privateNetworking: true           		 # 이 노드 그룹이 PRIVATE 서브넷만 사용하도록 지정합니다. 
     iam:
       withAddonPolicies:
         ebs: true                     		 # EBS CSI 드라이버가 작동하기 위한 IAM 권한 부여
