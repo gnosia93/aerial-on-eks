@@ -130,7 +130,43 @@ aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS 
 docker push ${ECR_URL}/${REPO_NAME}:${IMAGE_TAG}
 ```
 
-
+## POD 배포하기 ##
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sionna-generator
+  labels:
+    app: sionna-gen
+spec:
+  containers:
+  - name: sionna-container
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com     # 이미지 주소는 본인의 ECR 주소로 수정
+    
+    # gRPC 연결을 위한 환경 변수 설정 (코드 내에서 os.environ으로 참조 가능)
+    env:
+    - name: RECEIVER_ADDRESS
+      value: "pyaerial-service.default.svc.cluster.local:50051"
+    
+    resources:
+      limits:
+        nvidia.com/gpu: 1              # Sionna 가속을 위해 GPU 할당
+        memory: "8Gi"
+        cpu: "4"
+      requests:
+        nvidia.com: 1
+        memory: "4Gi"
+        cpu: "2"
+        
+    volumeMounts:                      # 대용량 신호 처리를 위한 공유 메모리 설정 (필요 시) 
+    - name: dshm
+      mountPath: /dev/shm
+  
+  volumes:
+  - name: dshm
+    emptyDir:
+      medium: Memory
+```
 
 ### 아키텍처 구현 핵심 포인트 ###
 * gRPC 방식: Pod가 서로 다른 노드에 있어도 작동하므로 확장성이 좋습니다.
