@@ -102,9 +102,8 @@ aws ec2 describe-subnets \
     --output table
 
 SUBNET_IDS=$(aws ec2 describe-subnets \
-    --region "${AWS_REGION}" \
     --filters "Name=tag:Name,Values=AOE-priv-subnet-*" "Name=vpc-id,Values=${VPC_ID}" \
-    --query "Subnets[*].AvailabilityZone" \
+    --query "Subnets[*].{ID:SubnetId, AZ:AvailabilityZone}" \
     --output text)
 
 if [ -z "$SUBNET_IDS" ]; then
@@ -116,9 +115,10 @@ SUBNET_YAML=""
 if [ -f SUBNET_IDS ]; then
     rm SUBNET_IDS
 fi
-for id in $SUBNET_IDS; do
-#   SUBNET_YAML+="      ${id}: {}" # 이 위치에서 엔터 키를 쳐서 실제 줄바꿈을 만듭니다.
-   echo "      ${id}: {}" >> SUBNET_IDS
+for STR in $SUBNET_IDS; do
+   az=$(echo $STR | cut -d' ' -f1)
+   subnet=$(echo $STR | cut -d' ' -f2)
+   echo "      ${az}: { id: ${subnet} }" >> SUBNET_IDS
 done
 ```
 [결과]
