@@ -17,7 +17,7 @@
 
 * [C6. 그라비톤 기반 L2/L3 스택 구현](https://github.com/gnosia93/aerial-on-eks/blob/main/apps/graviton-L2L3-stack.md)
 
-* [C7. 프로메테우수 스택으로 BER 시각화](https://github.com/gnosia93/aerial-on-eks/blob/main/lesson/c7-monitoring.md)
+* [C7. 그라파나로 BER 시각화](https://github.com/gnosia93/aerial-on-eks/blob/main/lesson/c7-monitoring.md)
 
 ### _Appendix_ ###
 
