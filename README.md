@@ -8,7 +8,7 @@
 * Sinnoa GPU Pod -> gRPC -> Graviton L2/L3 stack -> gRPC -> PyAreal GPU Pod 
 * PyAreal GPU Pod -> Prometheus/Grafna dashboard (BER 측정/시각화)
 * 지원 토폴로지 
-  * Shared Memory (Zero-Copy Interface)
+  * Shared Memory (Zero-Copy Interface / Sionna 와 PyAreal 가 동일 Pod를 사용하는 경우만 지원)
   * UDP (eCPRI / Raw Socket 기반)
   * gRPC TPC/IP  
 
