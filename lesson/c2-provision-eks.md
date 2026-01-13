@@ -286,8 +286,7 @@ aws ec2 describe-instances \
         Name: Tags[?Key==`Name`].Value | [0],
         NodeGroup: Tags[?Key==`eks:nodegroup-name`].Value | [0],
         SubnetId: SubnetId,
-        SubnetName: join(`, `, Tags[?Key==`Name`].Value) || SubnetId,
-        PrivateIp: PrivateIpAddress,
+        PublicIp: PublicIpAddress,
         State: State.Name
     }' \
     --output table
