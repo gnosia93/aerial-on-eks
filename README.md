@@ -13,6 +13,7 @@
 
 * [C4. 시그널 제너레이터 배포](https://github.com/gnosia93/aerial-on-eks/blob/main/apps/signal-generator.md)
 
+* [C5. 채널 리시버 배포]()
 
 ### _Appendix_ ###
 
