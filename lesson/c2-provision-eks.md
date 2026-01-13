@@ -276,7 +276,7 @@ aws iam put-role-policy \
     --policy-document "$POLICY_JSON"
 ```
 
-## eks 노드 출력 ##
+## eks 인스턴스 출력 ##
 ```
 # 서브넷 ID와 Name 태그를 매핑하여 인스턴스 정보와 함께 출력
 aws ec2 describe-instances \
