@@ -49,7 +49,7 @@ from sionna.channel import AWGN
 
 # reciever_channel = "pyaerial-service.default.svc.cluster.local:50051"
 # 동일 네임스페이스인 경우 아래와 같이 생략가능.
-reciever_channel = os.env["RECEIVER_ADDRESS"]
+reciever_channel = os.environ.get("RECEIVER_ADDRESS", "pyaerial-service:50051")
 
 class SignalGenerator(tf.keras.Model):
     def __init__(self, num_bits_per_symbol=4):
