@@ -2,8 +2,13 @@
 NVIDIA PyAerial 및 Triton gRPC 인프라 환경에서 Sionna 생성 신호를 실시간 전송하기 위한 gRPC 구현 코드이다. TensorFlow complex64 텐서를 tobytes()로 직렬화하여 protobuf bytes 필드에 담아 보내는 방식이 가장 효율적이다.
 
 ### 1. Proto 정의 (signal.proto) ###
+grpc 패키지를 설치한다. 
+```
+pip install grpcio grpcio-tools
+```
 먼저 IQ 샘플 데이터를 주고받기 위한 메시지 형식을 정의한다.
 
+[signal.proto]
 ```
 syntax = "proto3";
 
@@ -19,6 +24,15 @@ message SignalRequest {
 message SignalResponse {
   bool success = 1;
 }
+```
+파이썬 코드로 변환 (컴파일) 한다.
+```
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. signal.proto
+```
+[결과]
+```
+signal_pb2.py: 메시지 규격(SignalRequest, SignalResponse)이 정의된 파일.
+signal_pb2_grpc.py: 서비스 서버/클라이언트 로직(SignalStreamer)이 정의된 파일.
 ```
 
 ### 2. SignalGenerator ###
@@ -39,14 +53,14 @@ reciever_channel = "pyaerial-service:50051"
 class SignalGenerator(tf.keras.Model):
     def __init__(self, num_bits_per_symbol=4):
         super().__init__()
-        self.binary_source = BinarySource()
-        self.qam_source = QAMSource(num_bits_per_symbol)
-        self.channel = AWGN()
+        self.binary_source = BinarySource()                 # 비트 생성기 (0과 1로 구성된 랜덤 비트를 생성)
+        self.qam_source = QAMSource(num_bits_per_symbol)    # 디지털 변조기 (4비트를 묶어 복소수 좌표계(IQ Plane)로 옮김. 4비트이므로 16-QAM 변조 수행    
+        self.channel = AWGN()                               # AWGN(Additive White Gaussian Noise) 채널은 가장 기본적인 무선 통신 채널
 
     def generate_batch(self, batch_size, ebno_db=20.0):
-        bits = self.binary_source([batch_size, 1024]) 
-        x = self.qam_source(bits)
-        y = self.channel([x, ebno_db])
+        bits = self.binary_source([batch_size, 1024])       # batch_size개의 사용자(또는 스트림)에 대해 각각 1024비트씩 생성
+        x = self.qam_source(bits)                           # 0/1 데이터가 실제 전파에 실릴 수 있는 복소수(Complex64) 심볼로 변환   
+        y = self.channel([x, ebno_db])                      # 생성된 신호 x에 지정된 에너지 대비 노이즈 비율(ebno_db)만큼의 백색 잡음 추가  
         return y
 
 # gRPC 클라이언트 설정
