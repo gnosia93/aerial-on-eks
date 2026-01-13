@@ -276,6 +276,22 @@ aws iam put-role-policy \
     --policy-document "$POLICY_JSON"
 ```
 
+## eks 노드 출력 ##
+```
+# 서브넷 ID와 Name 태그를 매핑하여 인스턴스 정보와 함께 출력
+aws ec2 describe-instances \
+    --filters "Name=vpc-id,Values=${VPC_ID}" \
+    --query 'Reservations[*].Instances[*].{
+        InstanceId: InstanceId,
+        Name: Tags[?Key==`Name`].Value | [0],
+        NodeGroup: Tags[?Key==`eks:nodegroup-name`].Value | [0],
+        SubnetId: SubnetId,
+        SubnetName: join(`, `, Tags[?Key==`Name`].Value) || SubnetId,
+        PrivateIp: PrivateIpAddress,
+        State: State.Name
+    }' \
+    --output table
+```
 
 ## 클러스터 삭제 ##
 #### 1. 카펜터 인스턴스 프로파일 삭제 #### 
