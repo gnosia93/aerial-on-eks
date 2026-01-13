@@ -198,6 +198,7 @@ resource "aws_security_group" "instance_sg" {
   }
 }
 
+/*
 resource "aws_instance" "graviton_box" {
   ami                         = data.aws_ami.al2023_arm64.id
   instance_type               = var.graviton_type
@@ -231,6 +232,8 @@ _DATA
     Name = "aoe-code-server-graviton"
   }
 }
+*/
+
 
 resource "aws_instance" "x86_box" {
   ami                         = data.aws_ami.al2023_x86_64.id
