@@ -1,6 +1,6 @@
 # aerial-on-eks
 
-![](https://github.com/gnosia93/aerial-on-eks/blob/main/images/workshop-arch-aerial.png)
+![](https://github.com/gnosia93/aerial-on-eks/blob/main/images/workshop-arch-aerial-spot.png)
 
 ### _O-RAN(Open Radio Access Network) 아키텍처_ ###
 
